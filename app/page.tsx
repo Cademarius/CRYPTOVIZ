@@ -293,7 +293,7 @@ export default function DashboardPage() {
         ) : (
           tradesData.data && (
             <Card
-              title={`Price — ${selectedSymbol}`}
+              title={`Average Price — ${selectedSymbol}`}
               action={
                 <div className="flex items-center gap-3">
                   <span className="text-[11px] text-white/25 font-mono">
