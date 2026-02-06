@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import {
   useSymbols,
   useTradesAggregated1Min,
@@ -23,22 +23,20 @@ import Sidebar from "@/components/sidebar";
 import {
   formatPrice,
   formatPercent,
-  formatVolume,
   formatDateTime,
-  getSentimentColor,
-  getSentimentBg,
 } from "@/lib/utils";
 import PriceChart from "@/components/charts/price-chart";
 import BuySellChart from "@/components/charts/buy-sell-chart";
 import VelocityChart from "@/components/charts/velocity-chart";
 import TradesChart from "@/components/charts/trades-chart";
+import WhaleNotificationBell from "@/components/whale-notification-bell";
+import WhaleIcon from "@/components/icons/whale-icon";
 import {
   TrendingUp,
   TrendingDown,
   DollarSign,
   BarChart3,
   Zap,
-  Fish,
   ChevronDown,
   Newspaper,
   Activity,
@@ -60,6 +58,31 @@ const SYMBOL_COLORS: Record<string, string> = {
   "XRP/USD": "text-zinc-300",
   "BNB/USD": "text-yellow-400",
   "USDT/USD": "text-emerald-400",
+};
+
+/* ── Crypto badge colors for news ── */
+const CRYPTO_BADGE_COLORS: Record<string, { bg: string; text: string; border: string; dot: string }> = {
+  "BTC/USD": { bg: "bg-amber-400/8", text: "text-amber-400/90", border: "border-amber-400/12", dot: "bg-amber-400" },
+  "ETH/USD": { bg: "bg-blue-400/8", text: "text-blue-400/90", border: "border-blue-400/12", dot: "bg-blue-400" },
+  "XRP/USD": { bg: "bg-slate-300/8", text: "text-slate-300/90", border: "border-slate-300/12", dot: "bg-slate-300" },
+  "BNB/USD": { bg: "bg-yellow-400/8", text: "text-yellow-400/90", border: "border-yellow-400/12", dot: "bg-yellow-400" },
+  "USDT/USD": { bg: "bg-emerald-400/8", text: "text-emerald-400/90", border: "border-emerald-400/12", dot: "bg-emerald-400" },
+};
+const DEFAULT_CRYPTO_BADGE = { bg: "bg-indigo-400/8", text: "text-indigo-400/90", border: "border-indigo-400/12", dot: "bg-indigo-400" };
+
+/* ── Sentiment helpers ── */
+function normalizeSentiment(s: string): "positive" | "negative" | "neutral" {
+  const lower = s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  if (lower === "positive" || lower === "bullish" || lower === "favorable") return "positive";
+  if (lower === "negative" || lower === "bearish" || lower === "defavorable") return "negative";
+  if (lower === "neutral" || lower === "neutre") return "neutral";
+  return "neutral";
+}
+
+const SENTIMENT_CONFIG: Record<string, { label: string; bg: string; text: string; border: string }> = {
+  positive: { label: "Favorable", bg: "bg-emerald-400/8", text: "text-emerald-400", border: "border-emerald-400/15" },
+  negative: { label: "Défavorable", bg: "bg-red-400/8", text: "text-red-400", border: "border-red-400/15" },
+  neutral: { label: "Neutre", bg: "bg-amber-400/8", text: "text-amber-400", border: "border-amber-400/15" },
 };
 
 export default function DashboardPage() {
@@ -91,18 +114,25 @@ export default function DashboardPage() {
     setTimeout(() => setIsRefreshing(false), 1200);
   }, [trades1Min, trades1H, buySell, velocity, whales, news]);
 
-  // Derived stats
-  const latestPrice = tradesData.data?.data?.at(-1)?.avg_price ?? null;
-  const prevPrice = tradesData.data?.data?.at(-2)?.avg_price ?? null;
-  const priceChange =
-    latestPrice && prevPrice
-      ? ((latestPrice - prevPrice) / prevPrice) * 100
-      : null;
-  const totalVolume =
-    tradesData.data?.data?.reduce((sum, d) => sum + d.total_volume, 0) ?? null;
-  const latestVelocity =
-    velocity.data?.data?.at(-1)?.trades_per_second ?? null;
-  const latestRatio = buySell.data?.data?.at(-1)?.buy_sell_ratio ?? null;
+  // Derived stats (memoized to avoid recalculating on every render)
+  const latestPrice = useMemo(() => tradesData.data?.data?.at(-1)?.avg_price ?? null, [tradesData.data]);
+  const prevPrice = useMemo(() => tradesData.data?.data?.at(-2)?.avg_price ?? null, [tradesData.data]);
+  const priceChange = useMemo(
+    () => latestPrice && prevPrice ? ((latestPrice - prevPrice) / prevPrice) * 100 : null,
+    [latestPrice, prevPrice]
+  );
+  const totalTrades = useMemo(
+    () => tradesData.data?.data?.reduce((sum, d) => sum + d.total_trades, 0) ?? null,
+    [tradesData.data]
+  );
+  const latestVelocity = useMemo(
+    () => velocity.data?.data?.at(-1)?.trades_per_second ?? null,
+    [velocity.data]
+  );
+  const latestRatio = useMemo(
+    () => buySell.data?.data?.at(-1)?.buy_sell_ratio ?? null,
+    [buySell.data]
+  );
 
   const symbolIcon = SYMBOL_ICONS[selectedSymbol] || "◈";
   const symbolColor = SYMBOL_COLORS[selectedSymbol] || "text-indigo-400";
@@ -180,6 +210,11 @@ export default function DashboardPage() {
                 {formatPercent(priceChange)}
               </div>
             )}
+
+            {/* Whale Notification Bell */}
+            <div className="ml-auto">
+              <WhaleNotificationBell />
+            </div>
         </div>        {/* ── Close dropdown on click outside ── */}
         {dropdownOpen && (
           <div
@@ -208,8 +243,8 @@ export default function DashboardPage() {
             </div>
             <div className="animate-fade-in-up stagger-2">
               <StatCard
-                label="Volume"
-                value={formatVolume(totalVolume)}
+                label="Total Trades"
+                value={totalTrades ? totalTrades.toLocaleString() : "N/A"}
                 icon={<BarChart3 className="h-4 w-4" />}
                 accent="emerald"
               />
@@ -336,7 +371,7 @@ export default function DashboardPage() {
             title="Whale Alerts"
             action={
               <div className="flex items-center gap-1.5 text-[11px]">
-                <Fish className="h-3 w-3 text-amber-400/60" />
+                <WhaleIcon className="h-3 w-3 text-amber-400/60" />
                 <span className="text-white/25">
                   {whales.data?.count ?? 0} alerts
                 </span>
@@ -364,11 +399,11 @@ export default function DashboardPage() {
                             : "bg-red-500/8 text-red-400"
                         }`}
                       >
-                        <Fish className="h-4 w-4" />
+                        <WhaleIcon className="h-4 w-4" />
                       </div>
                       <div>
                         <p className="text-sm font-semibold text-white/85 font-mono">
-                          {w.qty.toFixed(4)}
+                          {w.qty}
                         </p>
                         <p className="text-[10px] text-white/25">
                           {formatDateTime(w.timestamp)}
@@ -383,7 +418,7 @@ export default function DashboardPage() {
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center py-8 text-white/20">
-                <Fish className="h-8 w-8 mb-2" />
+                <WhaleIcon className="h-8 w-8 mb-2" />
                 <p className="text-xs">No whale alerts</p>
               </div>
             )}
@@ -409,49 +444,62 @@ export default function DashboardPage() {
               </div>
             ) : news.data && news.data.data.length > 0 ? (
               <div className="max-h-90 space-y-2 overflow-y-auto pr-1">
-                {news.data.data.map((n, i) => (
-                  <a
-                    key={i}
-                    href={`https://www.google.com/search?q=${encodeURIComponent(n.title + " " + n.source)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block rounded-xl border border-white/[0.04] bg-white/[0.02] px-4 py-3 transition-all duration-300 hover:bg-white/[0.04] hover:border-white/[0.07] cursor-pointer group"
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <p className="text-xs font-semibold text-white/85 leading-snug line-clamp-2 group-hover:text-white/95 transition-colors">
-                        {n.title}
-                      </p>
-                      <span
-                        className={`shrink-0 rounded-lg border px-2 py-0.5 text-[10px] font-semibold capitalize ${getSentimentColor(
-                          n.sentiment
-                        )} ${getSentimentBg(n.sentiment)} ${
-                          (() => {
-                            const s = n.sentiment.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-                            if (s === "positive" || s === "bullish" || s === "favorable") return "border-emerald-400/15";
-                            if (s === "negative" || s === "bearish" || s === "defavorable") return "border-red-400/15";
-                            return "border-amber-400/15";
-                          })()
-                        }`}
-                      >
-                        {n.sentiment}
-                      </span>
-                    </div>
-                    {n.summary && (
-                      <p className="mt-1.5 text-[11px] text-white/30 line-clamp-1">
-                        {n.summary}
-                      </p>
-                    )}
-                    <div className="mt-2 flex items-center gap-2 text-[10px] text-white/20">
-                      <span>{n.source}</span>
-                      <span className="text-white/10">•</span>
-                      <span>{formatDateTime(n.timestamp)}</span>
-                      <span className="text-white/10">•</span>
-                      <span className="text-white/30">
-                        {n.confidence.toFixed(0)}%
-                      </span>
-                    </div>
-                  </a>
-                ))}
+                {news.data.data.map((n, i) => {
+                  const sentiment = normalizeSentiment(n.sentiment);
+                  const sConfig = SENTIMENT_CONFIG[sentiment];
+                  const cryptoColor = CRYPTO_BADGE_COLORS[n.symbol] || DEFAULT_CRYPTO_BADGE;
+
+                  return (
+                    <a
+                      key={i}
+                      href={`https://www.google.com/search?q=${encodeURIComponent(n.title + " " + n.source)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block rounded-xl border border-white/[0.04] bg-white/[0.02] px-4 py-3 transition-all duration-300 hover:bg-white/[0.04] hover:border-white/[0.07] cursor-pointer group"
+                    >
+                      <div className="flex items-start gap-3">
+                        {/* Crypto badge */}
+                        <div className="shrink-0 mt-0.5">
+                          <div className={`flex items-center gap-1.5 rounded-lg border ${cryptoColor.bg} ${cryptoColor.border} px-2 py-0.5`}>
+                            <div className={`h-1.5 w-1.5 rounded-full ${cryptoColor.dot}`} />
+                            <span className={`text-[10px] font-bold ${cryptoColor.text}`}>
+                              {n.symbol.replace("/USD", "")}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Content */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between gap-3">
+                            <p className="text-xs font-semibold text-white/85 leading-snug line-clamp-2 group-hover:text-white/95 transition-colors">
+                              {n.title}
+                            </p>
+                            {/* Sentiment badge */}
+                            <span
+                              className={`shrink-0 rounded-lg border px-2 py-0.5 text-[10px] font-semibold ${sConfig.bg} ${sConfig.text} ${sConfig.border}`}
+                            >
+                              {sConfig.label}
+                            </span>
+                          </div>
+                          {n.summary && (
+                            <p className="mt-1.5 text-[11px] text-white/30 line-clamp-1">
+                              {n.summary}
+                            </p>
+                          )}
+                          <div className="mt-2 flex items-center gap-2 text-[10px] text-white/20">
+                            <span>{n.source}</span>
+                            <span className="text-white/10">•</span>
+                            <span>{formatDateTime(n.timestamp)}</span>
+                            <span className="text-white/10">•</span>
+                            <span className="text-white/30">
+                              {n.confidence.toFixed(0)}%
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </a>
+                  );
+                })}
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center py-8 text-white/20">

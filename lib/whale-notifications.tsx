@@ -10,7 +10,7 @@ import {
   type ReactNode,
 } from "react";
 import type { WhaleData } from "@/lib/types";
-import { API_BASE } from "@/lib/api";
+import { buildApiUrl } from "@/lib/api";
 
 interface WhaleNotification extends WhaleData {
   id: string;
@@ -53,8 +53,8 @@ export function WhaleNotificationProvider({ children }: { children: ReactNode })
         eventSourceRef.current.close();
       }
 
-      const url = new URL("whales/stream", API_BASE);
-      const es = new EventSource(url.toString());
+      const url = buildApiUrl("whales/stream");
+      const es = new EventSource(url);
       eventSourceRef.current = es;
 
       es.onopen = () => setConnected(true);

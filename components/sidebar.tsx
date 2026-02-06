@@ -4,16 +4,15 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
-  Fish,
   Newspaper,
   Activity,
   RefreshCw,
 } from "lucide-react";
-import WhaleNotificationBell from "@/components/whale-notification-bell";
+import WhaleIcon from "@/components/icons/whale-icon";
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard, description: "Analytics overview" },
-  { href: "/whales", label: "Whale Tracker", icon: Fish, description: "Large transactions" },
+  { href: "/whales", label: "Whale Tracker", icon: WhaleIcon, description: "Large transactions" },
   { href: "/news", label: "News & Sentiment", icon: Newspaper, description: "Market sentiment" },
 ];
 
@@ -39,7 +38,6 @@ export default function Sidebar({ onRefresh, isRefreshing }: { onRefresh?: () =>
             </div>
           </div>
         </div>
-        <WhaleNotificationBell />
       </div>
 
       {/* Navigation */}

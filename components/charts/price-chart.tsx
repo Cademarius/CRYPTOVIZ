@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, memo } from "react";
 import {
   AreaChart,
   Area,
@@ -19,7 +19,7 @@ interface PriceChartProps {
   id?: string;
 }
 
-export default function PriceChart({ data, height = 300, id = "price" }: PriceChartProps) {
+function PriceChartInner({ data, height = 300, id = "price" }: PriceChartProps) {
   const chartData = useMemo(
     () =>
       data.map((d) => ({
@@ -88,3 +88,6 @@ export default function PriceChart({ data, height = 300, id = "price" }: PriceCh
     </ResponsiveContainer>
   );
 }
+
+const PriceChart = memo(PriceChartInner);
+export default PriceChart;

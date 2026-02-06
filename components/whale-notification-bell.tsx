@@ -4,7 +4,8 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useWhaleNotifications } from "@/lib/whale-notifications";
 import { formatDateTime, formatVolume } from "@/lib/utils";
-import { Bell, Fish, X, ExternalLink, Volume2, VolumeX } from "lucide-react";
+import WhaleIcon from "@/components/icons/whale-icon";
+import { Bell, X, ExternalLink, Volume2, VolumeX } from "lucide-react";
 
 export default function WhaleNotificationBell() {
   const {
@@ -71,8 +72,8 @@ export default function WhaleNotificationBell() {
 
   return (
     <>
-      {/* ── Toast notifications (top of screen) ── */}
-      <div className="fixed top-4 right-4 z-[100] flex flex-col gap-2 pointer-events-none">
+      {/* ── Toast notifications (bottom-right) ── */}
+      <div className="fixed bottom-4 right-4 z-[100] flex flex-col-reverse gap-2 pointer-events-none">
         {activeToasts.map((toast) => (
           <div
             key={toast.id}
@@ -85,7 +86,7 @@ export default function WhaleNotificationBell() {
                   : "bg-red-500/10 text-red-400"
               }`}
             >
-              <Fish className="h-4 w-4" />
+              <WhaleIcon className="h-4 w-4" />
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
@@ -143,7 +144,7 @@ export default function WhaleNotificationBell() {
             {/* Panel header */}
             <div className="flex items-center justify-between border-b border-white/[0.05] px-4 py-3">
               <div className="flex items-center gap-2">
-                <Fish className="h-4 w-4 text-indigo-400/60" />
+                <WhaleIcon className="h-4 w-4 text-indigo-400/60" />
                 <span className="text-xs font-bold text-white/80">Whale Alerts</span>
                 {notifications.length > 0 && (
                   <span className="rounded-full bg-white/5 px-2 py-0.5 text-[10px] text-white/30">
@@ -187,7 +188,7 @@ export default function WhaleNotificationBell() {
                           : "bg-red-500/8 text-red-400"
                       }`}
                     >
-                      <Fish className="h-3.5 w-3.5" />
+                      <WhaleIcon className="h-3.5 w-3.5" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
@@ -221,7 +222,7 @@ export default function WhaleNotificationBell() {
                 ))
               ) : (
                 <div className="flex flex-col items-center justify-center py-10 text-white/15">
-                  <Fish className="h-8 w-8 mb-2" />
+                  <WhaleIcon className="h-8 w-8 mb-2" />
                   <p className="text-[11px]">No whale alerts yet</p>
                 </div>
               )}

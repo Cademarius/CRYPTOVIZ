@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import type { WhaleData } from "@/lib/types";
-import { API_BASE } from "@/lib/api";
+import { buildApiUrl } from "@/lib/api";
 
 export function useWhaleStream(symbol?: string) {
   const [alerts, setAlerts] = useState<WhaleData[]>([]);
@@ -17,10 +17,9 @@ export function useWhaleStream(symbol?: string) {
         eventSourceRef.current.close();
       }
 
-      const url = new URL("whales/stream", API_BASE);
-      if (symbol) url.searchParams.set("symbol", symbol);
+      const url = buildApiUrl("whales/stream", symbol ? { symbol } : undefined);
 
-      const es = new EventSource(url.toString());
+      const es = new EventSource(url);
       eventSourceRef.current = es;
 
       es.onopen = () => setConnected(true);

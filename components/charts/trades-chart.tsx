@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, memo } from "react";
 import {
   BarChart,
   Bar,
@@ -18,7 +18,7 @@ interface TradesChartProps {
   height?: number;
 }
 
-export default function TradesChart({ data, height = 250 }: TradesChartProps) {
+function TradesChartInner({ data, height = 250 }: TradesChartProps) {
   const chartData = useMemo(
     () =>
       data.map((d) => ({
@@ -76,3 +76,6 @@ export default function TradesChart({ data, height = 250 }: TradesChartProps) {
     </ResponsiveContainer>
   );
 }
+
+const TradesChart = memo(TradesChartInner);
+export default TradesChart;

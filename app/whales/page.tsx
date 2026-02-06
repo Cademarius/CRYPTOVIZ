@@ -5,8 +5,9 @@ import { useWhales, useSymbols } from "@/hooks/use-api";
 import { useWhaleStream } from "@/hooks/use-whale-stream";
 import { LoadingSpinner, ErrorMessage, Card, Badge } from "@/components/ui";
 import Sidebar from "@/components/sidebar";
-import { formatDateTime, formatVolume } from "@/lib/utils";
-import { Fish, Radio, History, RefreshCw } from "lucide-react";
+import { formatDateTime } from "@/lib/utils";
+import WhaleIcon from "@/components/icons/whale-icon";
+import { Radio, History, RefreshCw } from "lucide-react";
 
 export default function WhalesPage() {
   const [filterSymbol, setFilterSymbol] = useState<string>("");
@@ -89,7 +90,7 @@ export default function WhalesPage() {
                           : "bg-red-500/8 text-red-400"
                       }`}
                     >
-                      <Fish className="h-4 w-4" />
+                      <WhaleIcon className="h-4 w-4" />
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
@@ -108,7 +109,7 @@ export default function WhalesPage() {
                     </div>
                   </div>
                   <p className="text-sm font-bold text-white/85 font-mono">
-                    {formatVolume(alert.qty)}
+                    {alert.qty}
                   </p>
                 </div>
               ))}
@@ -173,7 +174,7 @@ export default function WhalesPage() {
                         </Badge>
                       </td>
                       <td className="px-4 py-2.5 text-right font-mono text-white/85">
-                        {formatVolume(w.qty)}
+                        {w.qty}
                       </td>
                       <td className="px-4 py-2.5 font-medium text-white/85">
                         {w.symbol}
@@ -185,7 +186,7 @@ export default function WhalesPage() {
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center py-8 text-white/20">
-              <Fish className="h-8 w-8 mb-2" />
+              <WhaleIcon className="h-8 w-8 mb-2" />
               <p className="text-xs">No whale alerts found</p>
             </div>
           )}

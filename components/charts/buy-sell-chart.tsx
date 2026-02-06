@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, memo } from "react";
 import {
   BarChart,
   Bar,
@@ -19,7 +19,7 @@ interface BuySellChartProps {
   height?: number;
 }
 
-export default function BuySellChart({ data, height = 300 }: BuySellChartProps) {
+function BuySellChartInner({ data, height = 300 }: BuySellChartProps) {
   const chartData = useMemo(
     () =>
       data.map((d) => ({
@@ -74,3 +74,6 @@ export default function BuySellChart({ data, height = 300 }: BuySellChartProps) 
     </ResponsiveContainer>
   );
 }
+
+const BuySellChart = memo(BuySellChartInner);
+export default BuySellChart;

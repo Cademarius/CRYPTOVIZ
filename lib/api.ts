@@ -7,10 +7,16 @@ import type {
   NewsResponse,
 } from "./types";
 
-export const API_BASE = "http://64.23.190.226/api/";
+export const API_BASE = "/api/";
 
-async function fetchApi<T>(path: string, params?: Record<string, string>): Promise<T> {
-  const url = new URL(path, API_BASE);
+/** Build an absolute URL from a relative API path (works with both SSR and client) */
+export function buildApiUrl(path: string, params?: Record<string, string>): string {
+  // In the browser, window.location.origin gives us the full base
+  // During SSR, fall back to the external API directly
+  const base = typeof window !== "undefined"
+    ? `${window.location.origin}${API_BASE}`
+    : `http://64.23.190.226/api/`;
+  const url = new URL(path, base);
   if (params) {
     Object.entries(params).forEach(([key, value]) => {
       if (value !== undefined && value !== "") {
@@ -18,6 +24,11 @@ async function fetchApi<T>(path: string, params?: Record<string, string>): Promi
       }
     });
   }
+  return url.toString();
+}
+
+async function fetchApi<T>(path: string, params?: Record<string, string>): Promise<T> {
+  const url = buildApiUrl(path, params);
   const res = await fetch(url.toString(), { next: { revalidate: 0 } });
   if (!res.ok) {
     throw new Error(`API error: ${res.status} ${res.statusText}`);
@@ -86,9 +97,7 @@ export async function getWhales(
 
 // ---- Whales Stream (SSE) ----
 export function getWhalesStreamUrl(symbol?: string): string {
-  const url = new URL("whales/stream", API_BASE);
-  if (symbol) url.searchParams.set("symbol", symbol);
-  return url.toString();
+  return buildApiUrl("whales/stream", symbol ? { symbol } : undefined);
 }
 
 // ---- News ----

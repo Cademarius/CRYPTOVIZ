@@ -7,15 +7,12 @@ import Sidebar from "@/components/sidebar";
 import { formatDateTime } from "@/lib/utils";
 import {
   Newspaper,
-  TrendingUp,
-  TrendingDown,
-  Minus,
   RefreshCw,
   Filter,
   ExternalLink,
 } from "lucide-react";
 
-/* ── Crypto symbol colors for the left badge ── */
+/* ── Crypto symbol colors ── */
 const CRYPTO_BADGE_COLORS: Record<string, { bg: string; text: string; border: string; dot: string }> = {
   "BTC/USD": { bg: "bg-amber-400/8", text: "text-amber-400/90", border: "border-amber-400/12", dot: "bg-amber-400" },
   "ETH/USD": { bg: "bg-blue-400/8", text: "text-blue-400/90", border: "border-blue-400/12", dot: "bg-blue-400" },
@@ -23,7 +20,6 @@ const CRYPTO_BADGE_COLORS: Record<string, { bg: string; text: string; border: st
   "BNB/USD": { bg: "bg-yellow-400/8", text: "text-yellow-400/90", border: "border-yellow-400/12", dot: "bg-yellow-400" },
   "USDT/USD": { bg: "bg-emerald-400/8", text: "text-emerald-400/90", border: "border-emerald-400/12", dot: "bg-emerald-400" },
 };
-
 const DEFAULT_CRYPTO_BADGE = { bg: "bg-indigo-400/8", text: "text-indigo-400/90", border: "border-indigo-400/12", dot: "bg-indigo-400" };
 
 /* ── Sentiment helpers ── */
@@ -38,27 +34,21 @@ function normalizeSentiment(s: string): "positive" | "negative" | "neutral" {
 const SENTIMENT_CONFIG = {
   positive: {
     label: "Favorable",
-    icon: <TrendingUp className="h-3 w-3" />,
     bg: "bg-emerald-400/8",
     text: "text-emerald-400",
     border: "border-emerald-400/15",
-    barColor: "bg-emerald-400",
   },
   negative: {
     label: "Défavorable",
-    icon: <TrendingDown className="h-3 w-3" />,
     bg: "bg-red-400/8",
     text: "text-red-400",
     border: "border-red-400/15",
-    barColor: "bg-red-400",
   },
   neutral: {
     label: "Neutre",
-    icon: <Minus className="h-3 w-3" />,
     bg: "bg-amber-400/8",
     text: "text-amber-400",
     border: "border-amber-400/15",
-    barColor: "bg-amber-400",
   },
 };
 
@@ -208,7 +198,6 @@ export default function NewsPage() {
                         {/* Right: Sentiment badge + link icon */}
                         <div className="shrink-0 flex items-center gap-2">
                           <div className={`flex items-center gap-1.5 rounded-lg border ${config.bg} ${config.border} px-2 py-0.5`}>
-                            {config.icon}
                             <span className={`text-[10px] font-semibold ${config.text}`}>
                               {config.label}
                             </span>
@@ -225,20 +214,12 @@ export default function NewsPage() {
 
                       {/* Meta row */}
                       <div className="mt-3 flex items-center gap-3 flex-wrap">
-                        {/* Confidence bar */}
-                        <div className="flex items-center gap-2">
+                        {/* Confidence */}
+                        <div className="flex items-center gap-1.5">
                           <span className="text-[10px] text-white/20">Confidence</span>
-                          <div className="flex items-center gap-1.5">
-                            <div className="h-1.5 w-16 rounded-full bg-white/[0.06] overflow-hidden">
-                              <div
-                                className={`h-full rounded-full ${config.barColor} transition-all duration-500`}
-                                style={{ width: `${n.confidence}%`, opacity: 0.7 }}
-                              />
-                            </div>
-                            <span className={`text-[10px] font-semibold ${config.text}`}>
-                              {n.confidence.toFixed(0)}%
-                            </span>
-                          </div>
+                          <span className="text-[10px] font-semibold text-white/50">
+                            {n.confidence.toFixed(0)}%
+                          </span>
                         </div>
 
                         <div className="h-3 w-px bg-white/[0.06]" />

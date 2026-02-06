@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, memo } from "react";
 import {
   AreaChart,
   Area,
@@ -18,7 +18,7 @@ interface VelocityChartProps {
   height?: number;
 }
 
-export default function VelocityChart({ data, height = 250 }: VelocityChartProps) {
+function VelocityChartInner({ data, height = 250 }: VelocityChartProps) {
   const chartData = useMemo(
     () =>
       data.map((d) => ({
@@ -84,3 +84,6 @@ export default function VelocityChart({ data, height = 250 }: VelocityChartProps
     </ResponsiveContainer>
   );
 }
+
+const VelocityChart = memo(VelocityChartInner);
+export default VelocityChart;

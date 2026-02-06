@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import type {
   SymbolsResponse,
   TradeAggregatedResponse,
@@ -9,18 +9,11 @@ import type {
   WhaleResponse,
   NewsResponse,
 } from "@/lib/types";
-import { API_BASE } from "@/lib/api";
+import { buildApiUrl } from "@/lib/api";
 
 async function fetchApi<T>(path: string, params?: Record<string, string>): Promise<T> {
-  const url = new URL(path, API_BASE);
-  if (params) {
-    Object.entries(params).forEach(([key, value]) => {
-      if (value !== undefined && value !== "") {
-        url.searchParams.set(key, value);
-      }
-    });
-  }
-  const res = await fetch(url.toString());
+  const url = buildApiUrl(path, params);
+  const res = await fetch(url);
   if (!res.ok) throw new Error(`API error: ${res.status}`);
   return res.json() as Promise<T>;
 }
@@ -33,27 +26,40 @@ function useApiData<T>(
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const mountedRef = useRef(true);
+  const fetcherRef = useRef(fetcher);
+
+  // Keep fetcher ref current without triggering re-renders
+  fetcherRef.current = fetcher;
 
   const load = useCallback(async () => {
     try {
-      setLoading(true);
+      // Don't set loading=true on subsequent fetches (stale-while-revalidate)
+      if (data === null) setLoading(true);
       setError(null);
-      const result = await fetcher();
-      setData(result);
+      const result = await fetcherRef.current();
+      if (mountedRef.current) setData(result);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Unknown error");
+      if (mountedRef.current) setError(err instanceof Error ? err.message : "Unknown error");
     } finally {
-      setLoading(false);
+      if (mountedRef.current) setLoading(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);
 
   useEffect(() => {
+    mountedRef.current = true;
     load();
     if (refreshInterval) {
       const interval = setInterval(load, refreshInterval);
-      return () => clearInterval(interval);
+      return () => {
+        mountedRef.current = false;
+        clearInterval(interval);
+      };
     }
+    return () => {
+      mountedRef.current = false;
+    };
   }, [load, refreshInterval]);
 
   return { data, loading, error, refetch: load };
