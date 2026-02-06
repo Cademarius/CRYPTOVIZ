@@ -25,14 +25,14 @@ export function useWhaleStream(symbol?: string) {
 
       es.onopen = () => setConnected(true);
 
-      es.onmessage = (event) => {
+      es.addEventListener("whale", (event) => {
         try {
           const data = JSON.parse(event.data) as WhaleData;
           setAlerts((prev) => [data, ...prev].slice(0, 100));
         } catch {
           // ignore parse errors
         }
-      };
+      });
 
       es.onerror = () => {
         setConnected(false);

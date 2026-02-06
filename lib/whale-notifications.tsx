@@ -59,7 +59,7 @@ export function WhaleNotificationProvider({ children }: { children: ReactNode })
 
       es.onopen = () => setConnected(true);
 
-      es.onmessage = (event) => {
+      es.addEventListener("whale", (event) => {
         try {
           const data = JSON.parse(event.data) as WhaleData;
           const notification: WhaleNotification = {
@@ -71,7 +71,7 @@ export function WhaleNotificationProvider({ children }: { children: ReactNode })
         } catch {
           // ignore parse errors
         }
-      };
+      });
 
       es.onerror = () => {
         setConnected(false);
