@@ -28,14 +28,22 @@ function useApiData<T>(
   const [error, setError] = useState<string | null>(null);
   const mountedRef = useRef(true);
   const fetcherRef = useRef(fetcher);
+  const prevDepsRef = useRef<unknown[]>(deps);
 
   // Keep fetcher ref current without triggering re-renders
   fetcherRef.current = fetcher;
 
+  // Reset data immediately when deps change (avoids showing stale data from another symbol)
+  const depsChanged = deps.length !== prevDepsRef.current.length ||
+    deps.some((d, i) => d !== prevDepsRef.current[i]);
+  if (depsChanged) {
+    prevDepsRef.current = deps;
+    // We don't call setData here (can't during render) — handled in useEffect below
+  }
+
   const load = useCallback(async () => {
     try {
-      // Don't set loading=true on subsequent fetches (stale-while-revalidate)
-      if (data === null) setLoading(true);
+      setLoading(true);
       setError(null);
       const result = await fetcherRef.current();
       if (mountedRef.current) setData(result);
@@ -49,6 +57,9 @@ function useApiData<T>(
 
   useEffect(() => {
     mountedRef.current = true;
+    // Reset data on deps change so skeletons show immediately
+    setData(null);
+    setLoading(true);
     load();
     if (refreshInterval) {
       const interval = setInterval(load, refreshInterval);

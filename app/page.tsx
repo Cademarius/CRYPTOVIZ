@@ -101,7 +101,13 @@ export default function DashboardPage() {
   const news = useNews(selectedSymbol, 8);
 
   const tradesData = timeRange === "1min" ? trades1Min : trades1H;
-  const isLoading = tradesData.loading && !tradesData.data;
+
+  // Unified loading: all charts appear together or none
+  const allChartsReady = !!(
+    tradesData.data &&
+    buySell.data &&
+    velocity.data
+  );
 
   const refreshAll = useCallback(() => {
     setIsRefreshing(true);
@@ -225,7 +231,7 @@ export default function DashboardPage() {
         )}
 
         {/* ── Stat Cards ── */}
-        {isLoading && !tradesData.data ? (
+        {!allChartsReady ? (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <SkeletonCard />
             <SkeletonCard />
@@ -282,7 +288,7 @@ export default function DashboardPage() {
         {tradesData.error && <ErrorMessage message={tradesData.error} />}
 
         {/* ── Price Chart (Hero) ── */}
-        {isLoading && !tradesData.data ? (
+        {!allChartsReady ? (
           <SkeletonChart height={320} />
         ) : (
           tradesData.data && (
@@ -314,42 +320,51 @@ export default function DashboardPage() {
         )}
 
         {/* ── Buy/Sell + Velocity Row ── */}
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-          {buySell.data && (
-            <Card
-              title="Buy vs Sell"
-              action={
-                <div className="flex items-center gap-3 text-[11px]">
-                  <span className="flex items-center gap-1.5">
-                    <span className="h-2 w-2 rounded-full bg-emerald-400" />
-                    <span className="text-white/30">Buy</span>
+        {!allChartsReady ? (
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+            <SkeletonChart height={250} />
+            <SkeletonChart height={250} />
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+            {buySell.data && (
+              <Card
+                title="Buy vs Sell"
+                action={
+                  <div className="flex items-center gap-3 text-[11px]">
+                    <span className="flex items-center gap-1.5">
+                      <span className="h-2 w-2 rounded-full bg-emerald-400" />
+                      <span className="text-white/30">Buy</span>
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <span className="h-2 w-2 rounded-full bg-red-400" />
+                      <span className="text-white/30">Sell</span>
+                    </span>
+                  </div>
+                }
+              >
+                <BuySellChart data={buySell.data.data} height={250} />
+              </Card>
+            )}
+            {velocity.data && (
+              <Card
+                title="Trading Velocity"
+                action={
+                  <span className="text-[11px] text-white/25 font-mono">
+                    trades/sec
                   </span>
-                  <span className="flex items-center gap-1.5">
-                    <span className="h-2 w-2 rounded-full bg-red-400" />
-                    <span className="text-white/30">Sell</span>
-                  </span>
-                </div>
-              }
-            >
-              <BuySellChart data={buySell.data.data} height={250} />
-            </Card>
-          )}
-          {velocity.data && (
-            <Card
-              title="Trading Velocity"
-              action={
-                <span className="text-[11px] text-white/25 font-mono">
-                  trades/sec
-                </span>
-              }
-            >
-              <VelocityChart data={velocity.data.data} height={250} />
-            </Card>
-          )}
-        </div>
+                }
+              >
+                <VelocityChart data={velocity.data.data} height={250} />
+              </Card>
+            )}
+          </div>
+        )}
 
         {/* ── Total Trades ── */}
-        {tradesData.data && (
+        {!allChartsReady ? (
+          <SkeletonChart height={250} />
+        ) : tradesData.data ? (
           <Card
             title={`Total Trades — ${selectedSymbol}`}
             action={
@@ -363,7 +378,7 @@ export default function DashboardPage() {
           >
             <TradesChart data={tradesData.data.data} height={250} />
           </Card>
-        )}
+        ) : null}
 
         {/* ── Whale Alerts + News Feed ── */}
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
