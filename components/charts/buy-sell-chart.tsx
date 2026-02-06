@@ -22,7 +22,7 @@ interface BuySellChartProps {
 function BuySellChartInner({ data, height = 300 }: BuySellChartProps) {
   const chartData = useMemo(
     () =>
-      data.map((d) => ({
+      [...data].reverse().map((d) => ({
         time: formatTime(d.window_start),
         buy: d.buy_count,
         sell: -d.sell_count,
@@ -35,18 +35,18 @@ function BuySellChartInner({ data, height = 300 }: BuySellChartProps) {
   return (
     <ResponsiveContainer width="100%" height={height}>
       <BarChart data={chartData} stackOffset="sign" margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.03)" vertical={false} />
+        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
         <XAxis
           dataKey="time"
-          stroke="rgba(255,255,255,0.08)"
-          fontSize={10}
+          stroke="rgba(255,255,255,0.35)"
+          fontSize={11}
           tickLine={false}
           axisLine={false}
           tickMargin={8}
         />
         <YAxis
-          stroke="rgba(255,255,255,0.08)"
-          fontSize={10}
+          stroke="rgba(255,255,255,0.35)"
+          fontSize={11}
           tickLine={false}
           axisLine={false}
         />

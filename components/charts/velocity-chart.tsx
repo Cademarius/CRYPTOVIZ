@@ -21,7 +21,7 @@ interface VelocityChartProps {
 function VelocityChartInner({ data, height = 250 }: VelocityChartProps) {
   const chartData = useMemo(
     () =>
-      data.map((d) => ({
+      [...data].reverse().map((d) => ({
         time: formatTime(d.window_start),
         tps: d.trades_per_second,
         count: d.trades_count,
@@ -38,18 +38,18 @@ function VelocityChartInner({ data, height = 250 }: VelocityChartProps) {
             <stop offset="100%" stopColor="#f59e0b" stopOpacity={0} />
           </linearGradient>
         </defs>
-        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.03)" vertical={false} />
+        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
         <XAxis
           dataKey="time"
-          stroke="rgba(255,255,255,0.08)"
-          fontSize={10}
+          stroke="rgba(255,255,255,0.35)"
+          fontSize={11}
           tickLine={false}
           axisLine={false}
           tickMargin={8}
         />
         <YAxis
-          stroke="rgba(255,255,255,0.08)"
-          fontSize={10}
+          stroke="rgba(255,255,255,0.35)"
+          fontSize={11}
           tickLine={false}
           axisLine={false}
           width={40}

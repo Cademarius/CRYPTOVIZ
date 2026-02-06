@@ -36,17 +36,18 @@ export function formatPercent(value: number | null): string {
 
 export function formatTime(dateStr: string): string {
   const d = new Date(dateStr);
-  return d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
+  return d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", hour12: false });
 }
 
 export function formatDateTime(dateStr: string): string {
   const d = new Date(dateStr);
-  return d.toLocaleString("en-US", {
+  return d.toLocaleString("fr-FR", {
     year: "numeric",
     month: "short",
     day: "numeric",
     hour: "2-digit",
     minute: "2-digit",
+    hour12: false,
   });
 }
 

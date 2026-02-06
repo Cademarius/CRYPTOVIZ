@@ -115,8 +115,9 @@ export default function DashboardPage() {
   }, [trades1Min, trades1H, buySell, velocity, whales, news]);
 
   // Derived stats (memoized to avoid recalculating on every render)
-  const latestPrice = useMemo(() => tradesData.data?.data?.at(-1)?.avg_price ?? null, [tradesData.data]);
-  const prevPrice = useMemo(() => tradesData.data?.data?.at(-2)?.avg_price ?? null, [tradesData.data]);
+  // API returns data newest-first, so index 0 = latest, index 1 = previous
+  const latestPrice = useMemo(() => tradesData.data?.data?.at(0)?.avg_price ?? null, [tradesData.data]);
+  const prevPrice = useMemo(() => tradesData.data?.data?.at(1)?.avg_price ?? null, [tradesData.data]);
   const priceChange = useMemo(
     () => latestPrice && prevPrice ? ((latestPrice - prevPrice) / prevPrice) * 100 : null,
     [latestPrice, prevPrice]
@@ -126,11 +127,11 @@ export default function DashboardPage() {
     [tradesData.data]
   );
   const latestVelocity = useMemo(
-    () => velocity.data?.data?.at(-1)?.trades_per_second ?? null,
+    () => velocity.data?.data?.at(0)?.trades_per_second ?? null,
     [velocity.data]
   );
   const latestRatio = useMemo(
-    () => buySell.data?.data?.at(-1)?.buy_sell_ratio ?? null,
+    () => buySell.data?.data?.at(0)?.buy_sell_ratio ?? null,
     [buySell.data]
   );
 

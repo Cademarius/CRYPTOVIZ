@@ -56,7 +56,6 @@ const ARTICLE_COUNTS = [10, 25, 50, 100];
 
 export default function NewsPage() {
   const [filterSymbol, setFilterSymbol] = useState<string>("");
-  const [filterSentiment, setFilterSentiment] = useState<string>("");
   const [articleCount, setArticleCount] = useState<number>(50);
   const { data: symbols } = useSymbols();
   const { data, loading, error, refetch } = useNews(filterSymbol || undefined, articleCount);
@@ -64,12 +63,8 @@ export default function NewsPage() {
   /* ── Filtered data ── */
   const filteredNews = useMemo(() => {
     if (!data) return [];
-    let items = data.data;
-    if (filterSentiment) {
-      items = items.filter((n) => normalizeSentiment(n.sentiment) === filterSentiment);
-    }
-    return items;
-  }, [data, filterSentiment]);
+    return data.data;
+  }, [data]);
 
   return (
     <>
@@ -113,21 +108,6 @@ export default function NewsPage() {
               {symbols?.symbols.map((s) => (
                 <option key={s} value={s}>{s}</option>
               ))}
-            </select>
-          </div>
-
-          {/* Sentiment filter */}
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] text-white/30 uppercase tracking-wider">Sentiment</span>
-            <select
-              value={filterSentiment}
-              onChange={(e) => setFilterSentiment(e.target.value)}
-              className="rounded-lg border border-white/[0.06] bg-[#0c0c14] px-2.5 py-1.5 text-[11px] text-white/70 focus:border-indigo-400/20 focus:outline-none transition-colors [&>option]:bg-[#0c0c14] [&>option]:text-white/70"
-            >
-              <option value="">Tous</option>
-              <option value="positive">Favorable</option>
-              <option value="neutral">Neutre</option>
-              <option value="negative">Défavorable</option>
             </select>
           </div>
 

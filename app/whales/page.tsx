@@ -7,7 +7,7 @@ import { LoadingSpinner, ErrorMessage, Card, Badge } from "@/components/ui";
 import Sidebar from "@/components/sidebar";
 import { formatDateTime } from "@/lib/utils";
 import WhaleIcon from "@/components/icons/whale-icon";
-import { Radio, History, RefreshCw } from "lucide-react";
+import { History, RefreshCw } from "lucide-react";
 
 export default function WhalesPage() {
   const [filterSymbol, setFilterSymbol] = useState<string>("");
@@ -16,9 +16,7 @@ export default function WhalesPage() {
     filterSymbol || undefined,
     100
   );
-  const { alerts: liveAlerts, connected } = useWhaleStream(
-    filterSymbol || undefined
-  );
+  const { connected } = useWhaleStream(filterSymbol || undefined);
 
   return (
     <>
@@ -61,66 +59,6 @@ export default function WhalesPage() {
         </div>
 
         {error && <ErrorMessage message={error} />}
-
-        {/* Live Alerts */}
-        <Card
-          title="Live Stream"
-          className="border-indigo-400/10"
-          action={
-            <div className="flex items-center gap-1.5 text-[11px]">
-              <Radio className="h-3 w-3 text-indigo-400/60" />
-              <span className="text-indigo-400/40 font-medium">
-                {liveAlerts.length} received
-              </span>
-            </div>
-          }
-        >
-          {liveAlerts.length > 0 ? (
-            <div className="max-h-96 space-y-2 overflow-y-auto pr-1">
-              {liveAlerts.map((alert, i) => (
-                <div
-                  key={`live-${i}`}
-                  className="flex items-center justify-between rounded-xl border border-indigo-400/8 bg-indigo-400/[0.03] px-4 py-3 animate-fade-in-up"
-                >
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={`flex h-8 w-8 items-center justify-center rounded-lg ${
-                        alert.side === "buy"
-                          ? "bg-emerald-500/8 text-emerald-400"
-                          : "bg-red-500/8 text-red-400"
-                      }`}
-                    >
-                      <WhaleIcon className="h-4 w-4" />
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-semibold text-white/85">
-                          {alert.symbol}
-                        </span>
-                        <Badge
-                          variant={alert.side === "buy" ? "success" : "danger"}
-                        >
-                          {alert.side.toUpperCase()}
-                        </Badge>
-                      </div>
-                      <p className="text-[10px] text-white/25">
-                        {formatDateTime(alert.timestamp)}
-                      </p>
-                    </div>
-                  </div>
-                  <p className="text-sm font-bold text-white/85 font-mono">
-                    {alert.qty}
-                  </p>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center py-8 text-white/20">
-              <Radio className="h-8 w-8 mb-2" />
-              <p className="text-xs">Waiting for whale alerts…</p>
-            </div>
-          )}
-        </Card>
 
         {/* Historical Alerts */}
         <Card

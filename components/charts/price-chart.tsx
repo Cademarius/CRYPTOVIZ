@@ -22,7 +22,7 @@ interface PriceChartProps {
 function PriceChartInner({ data, height = 300, id = "price" }: PriceChartProps) {
   const chartData = useMemo(
     () =>
-      data.map((d) => ({
+      [...data].reverse().map((d) => ({
         time: formatTime(d.window_start),
         price: d.avg_price,
         volume: d.total_volume,
@@ -43,18 +43,18 @@ function PriceChartInner({ data, height = 300, id = "price" }: PriceChartProps) 
             <stop offset="100%" stopColor={color} stopOpacity={0} />
           </linearGradient>
         </defs>
-        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.03)" vertical={false} />
+        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
         <XAxis
           dataKey="time"
-          stroke="rgba(255,255,255,0.08)"
-          fontSize={10}
+          stroke="rgba(255,255,255,0.35)"
+          fontSize={11}
           tickLine={false}
           axisLine={false}
           tickMargin={8}
         />
         <YAxis
-          stroke="rgba(255,255,255,0.08)"
-          fontSize={10}
+          stroke="rgba(255,255,255,0.35)"
+          fontSize={11}
           tickLine={false}
           axisLine={false}
           tickFormatter={(v: number) => formatPrice(v)}

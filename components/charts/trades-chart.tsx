@@ -21,7 +21,7 @@ interface TradesChartProps {
 function TradesChartInner({ data, height = 250 }: TradesChartProps) {
   const chartData = useMemo(
     () =>
-      data.map((d) => ({
+      [...data].reverse().map((d) => ({
         time: formatTime(d.window_start),
         trades: d.total_trades,
       })),
@@ -37,18 +37,18 @@ function TradesChartInner({ data, height = 250 }: TradesChartProps) {
             <stop offset="100%" stopColor="#818cf8" stopOpacity={0.2} />
           </linearGradient>
         </defs>
-        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.03)" vertical={false} />
+        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
         <XAxis
           dataKey="time"
-          stroke="rgba(255,255,255,0.08)"
-          fontSize={10}
+          stroke="rgba(255,255,255,0.35)"
+          fontSize={11}
           tickLine={false}
           axisLine={false}
           tickMargin={8}
         />
         <YAxis
-          stroke="rgba(255,255,255,0.08)"
-          fontSize={10}
+          stroke="rgba(255,255,255,0.35)"
+          fontSize={11}
           tickLine={false}
           axisLine={false}
           width={45}

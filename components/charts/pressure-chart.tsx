@@ -39,32 +39,33 @@ export default function PressureChart({ data, height = 250 }: PressureChartProps
             <stop offset="100%" stopColor="#10b981" stopOpacity={0} />
           </linearGradient>
         </defs>
-        <CartesianGrid strokeDasharray="3 3" stroke="#18181b" vertical={false} />
+        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
         <XAxis
           dataKey="time"
-          stroke="#3f3f46"
-          fontSize={10}
+          stroke="rgba(255,255,255,0.35)"
+          fontSize={11}
           tickLine={false}
           axisLine={false}
           tickMargin={8}
         />
         <YAxis
-          stroke="#3f3f46"
-          fontSize={10}
+          stroke="rgba(255,255,255,0.35)"
+          fontSize={11}
           tickLine={false}
           axisLine={false}
           width={50}
         />
-        <ReferenceLine y={0} stroke="#27272a" strokeDasharray="3 3" />
+        <ReferenceLine y={0} stroke="rgba(255,255,255,0.1)" strokeDasharray="3 3" />
         <Tooltip
           contentStyle={{
-            backgroundColor: "rgba(24, 24, 27, 0.95)",
-            border: "1px solid #27272a",
-            borderRadius: "10px",
-            color: "#fff",
+            backgroundColor: "rgba(12, 12, 20, 0.95)",
+            border: "1px solid rgba(255,255,255,0.06)",
+            borderRadius: "12px",
+            color: "rgba(255,255,255,0.8)",
             fontSize: "12px",
-            boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
+            boxShadow: "0 8px 32px rgba(0,0,0,0.5)",
             padding: "8px 12px",
+            backdropFilter: "blur(12px)",
           }}
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           formatter={(value: any) => [Number(value).toFixed(4), "Net Pressure"]}

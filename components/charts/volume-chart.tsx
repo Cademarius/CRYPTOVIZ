@@ -32,18 +32,18 @@ export default function VolumeChart({ data, height = 200 }: VolumeChartProps) {
   return (
     <ResponsiveContainer width="100%" height={height}>
       <BarChart data={chartData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#18181b" vertical={false} />
+        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
         <XAxis
           dataKey="time"
-          stroke="#3f3f46"
-          fontSize={10}
+          stroke="rgba(255,255,255,0.35)"
+          fontSize={11}
           tickLine={false}
           axisLine={false}
           tickMargin={8}
         />
         <YAxis
-          stroke="#3f3f46"
-          fontSize={10}
+          stroke="rgba(255,255,255,0.35)"
+          fontSize={11}
           tickLine={false}
           axisLine={false}
           tickFormatter={(v: number) => formatVolume(v)}
@@ -51,13 +51,14 @@ export default function VolumeChart({ data, height = 200 }: VolumeChartProps) {
         />
         <Tooltip
           contentStyle={{
-            backgroundColor: "rgba(24, 24, 27, 0.95)",
-            border: "1px solid #27272a",
-            borderRadius: "10px",
-            color: "#fff",
+            backgroundColor: "rgba(12, 12, 20, 0.95)",
+            border: "1px solid rgba(255,255,255,0.06)",
+            borderRadius: "12px",
+            color: "rgba(255,255,255,0.8)",
             fontSize: "12px",
-            boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
+            boxShadow: "0 8px 32px rgba(0,0,0,0.5)",
             padding: "8px 12px",
+            backdropFilter: "blur(12px)",
           }}
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           formatter={(value: any, name: any) => [
