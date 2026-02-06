@@ -1,0 +1,664 @@
+openapi: 3.1.0
+info:
+  title: CryptoViz API
+  description: "API pour le dashboard de visualisation crypto en temps r\xE9el"
+  version: 1.0.0
+paths:
+  /symbols:
+    get:
+      tags:
+      - Symbols
+      summary: Get Symbols
+      description: Retourne la liste des cryptos disponibles
+      operationId: get_symbols_symbols_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SymbolsResponse'
+  /trades/aggregated/1min:
+    get:
+      tags:
+      - Trades
+      summary: Get Trades Aggregated 1Min
+      description: "Retourne les agr\xE9gations par minute"
+      operationId: get_trades_aggregated_1min_trades_aggregated_1min_get
+      parameters:
+      - name: symbol
+        in: query
+        required: true
+        schema:
+          type: string
+          description: 'Crypto symbol (ex: BTC/USD)'
+          title: Symbol
+        description: 'Crypto symbol (ex: BTC/USD)'
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 1440
+          minimum: 1
+          description: Nombre de points
+          default: 60
+          title: Limit
+        description: Nombre de points
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TradeAggregatedResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /trades/aggregated/1h:
+    get:
+      tags:
+      - Trades
+      summary: Get Trades Aggregated 1H
+      description: "Retourne les agr\xE9gations par heure (heures piles UTC)"
+      operationId: get_trades_aggregated_1h_trades_aggregated_1h_get
+      parameters:
+      - name: symbol
+        in: query
+        required: true
+        schema:
+          type: string
+          description: 'Crypto symbol (ex: BTC/USD)'
+          title: Symbol
+        description: 'Crypto symbol (ex: BTC/USD)'
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 168
+          minimum: 1
+          description: Nombre de points
+          default: 24
+          title: Limit
+        description: Nombre de points
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TradeAggregatedResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /trades/buy-sell:
+    get:
+      tags:
+      - Trades
+      summary: Get Buy Sell
+      description: Retourne les ratios buy/sell par minute
+      operationId: get_buy_sell_trades_buy_sell_get
+      parameters:
+      - name: symbol
+        in: query
+        required: true
+        schema:
+          type: string
+          description: 'Crypto symbol (ex: BTC/USD)'
+          title: Symbol
+        description: 'Crypto symbol (ex: BTC/USD)'
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 1440
+          minimum: 1
+          description: Nombre de points
+          default: 60
+          title: Limit
+        description: Nombre de points
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BuySellResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /trades/velocity:
+    get:
+      tags:
+      - Trades
+      summary: Get Velocity
+      description: "Retourne la v\xE9locit\xE9 (trades par seconde) par minute"
+      operationId: get_velocity_trades_velocity_get
+      parameters:
+      - name: symbol
+        in: query
+        required: true
+        schema:
+          type: string
+          description: 'Crypto symbol (ex: BTC/USD)'
+          title: Symbol
+        description: 'Crypto symbol (ex: BTC/USD)'
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 1440
+          minimum: 1
+          description: Nombre de points
+          default: 60
+          title: Limit
+        description: Nombre de points
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VelocityResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /whales:
+    get:
+      tags:
+      - Whales
+      summary: Get Whales
+      description: Retourne les alertes whale (historique)
+      operationId: get_whales_whales_get
+      parameters:
+      - name: symbol
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Filtre par crypto (optionnel)
+          title: Symbol
+        description: Filtre par crypto (optionnel)
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 500
+          minimum: 1
+          description: Nombre d'alertes
+          default: 50
+          title: Limit
+        description: Nombre d'alertes
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WhaleResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /whales/stream:
+    get:
+      tags:
+      - Whales
+      summary: Whales Stream
+      description: "Stream SSE des alertes whale en temps r\xE9el"
+      operationId: whales_stream_whales_stream_get
+      parameters:
+      - name: symbol
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Filtre par crypto (optionnel)
+          title: Symbol
+        description: Filtre par crypto (optionnel)
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /news:
+    get:
+      tags:
+      - News
+      summary: Get News
+      description: Retourne les news avec leur analyse de sentiment
+      operationId: get_news_news_get
+      parameters:
+      - name: symbol
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Filtre par crypto (optionnel)
+          title: Symbol
+        description: Filtre par crypto (optionnel)
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 1
+          description: Nombre de news
+          default: 20
+          title: Limit
+        description: Nombre de news
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NewsResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /dashboard/overview:
+    get:
+      tags:
+      - Dashboard
+      summary: Get Dashboard Overview
+      description: "Retourne un r\xE9sum\xE9 de toutes les cryptos"
+      operationId: get_dashboard_overview_dashboard_overview_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardOverviewResponse'
+  /:
+    get:
+      tags:
+      - Health
+      summary: Root
+      operationId: root__get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /health:
+    get:
+      tags:
+      - Health
+      summary: Health Check
+      operationId: health_check_health_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+components:
+  schemas:
+    BuySellData:
+      properties:
+        window_start:
+          type: string
+          format: date-time
+          title: Window Start
+        window_end:
+          type: string
+          format: date-time
+          title: Window End
+        buy_count:
+          type: integer
+          title: Buy Count
+        sell_count:
+          type: integer
+          title: Sell Count
+        buy_sell_ratio:
+          type: number
+          title: Buy Sell Ratio
+        net_pressure:
+          type: number
+          title: Net Pressure
+      type: object
+      required:
+      - window_start
+      - window_end
+      - buy_count
+      - sell_count
+      - buy_sell_ratio
+      - net_pressure
+      title: BuySellData
+    BuySellResponse:
+      properties:
+        symbol:
+          type: string
+          title: Symbol
+        count:
+          type: integer
+          title: Count
+        data:
+          items:
+            $ref: '#/components/schemas/BuySellData'
+          type: array
+          title: Data
+      type: object
+      required:
+      - symbol
+      - count
+      - data
+      title: BuySellResponse
+    CryptoOverview:
+      properties:
+        symbol:
+          type: string
+          title: Symbol
+        last_price:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Last Price
+        price_change_1h:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Price Change 1H
+        volume_1h:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Volume 1H
+        buy_sell_ratio:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Buy Sell Ratio
+        velocity:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Velocity
+        whale_count_24h:
+          type: integer
+          title: Whale Count 24H
+        news_sentiment:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: News Sentiment
+      type: object
+      required:
+      - symbol
+      - last_price
+      - price_change_1h
+      - volume_1h
+      - buy_sell_ratio
+      - velocity
+      - whale_count_24h
+      - news_sentiment
+      title: CryptoOverview
+    DashboardOverviewResponse:
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          title: Timestamp
+        cryptos:
+          items:
+            $ref: '#/components/schemas/CryptoOverview'
+          type: array
+          title: Cryptos
+      type: object
+      required:
+      - timestamp
+      - cryptos
+      title: DashboardOverviewResponse
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    NewsData:
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          title: Timestamp
+        symbol:
+          type: string
+          title: Symbol
+        source:
+          type: string
+          title: Source
+        title:
+          type: string
+          title: Title
+        summary:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Summary
+        sentiment:
+          type: string
+          title: Sentiment
+        confidence:
+          type: number
+          title: Confidence
+      type: object
+      required:
+      - timestamp
+      - symbol
+      - source
+      - title
+      - summary
+      - sentiment
+      - confidence
+      title: NewsData
+    NewsResponse:
+      properties:
+        count:
+          type: integer
+          title: Count
+        data:
+          items:
+            $ref: '#/components/schemas/NewsData'
+          type: array
+          title: Data
+      type: object
+      required:
+      - count
+      - data
+      title: NewsResponse
+    SymbolsResponse:
+      properties:
+        symbols:
+          items:
+            type: string
+          type: array
+          title: Symbols
+      type: object
+      required:
+      - symbols
+      title: SymbolsResponse
+    TradeAggregatedData:
+      properties:
+        window_start:
+          type: string
+          format: date-time
+          title: Window Start
+        window_end:
+          type: string
+          format: date-time
+          title: Window End
+        total_trades:
+          type: integer
+          title: Total Trades
+        total_volume:
+          type: number
+          title: Total Volume
+        avg_price:
+          type: number
+          title: Avg Price
+      type: object
+      required:
+      - window_start
+      - window_end
+      - total_trades
+      - total_volume
+      - avg_price
+      title: TradeAggregatedData
+    TradeAggregatedResponse:
+      properties:
+        symbol:
+          type: string
+          title: Symbol
+        interval:
+          type: string
+          title: Interval
+        count:
+          type: integer
+          title: Count
+        data:
+          items:
+            $ref: '#/components/schemas/TradeAggregatedData'
+          type: array
+          title: Data
+      type: object
+      required:
+      - symbol
+      - interval
+      - count
+      - data
+      title: TradeAggregatedResponse
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    VelocityData:
+      properties:
+        window_start:
+          type: string
+          format: date-time
+          title: Window Start
+        window_end:
+          type: string
+          format: date-time
+          title: Window End
+        trades_count:
+          type: integer
+          title: Trades Count
+        trades_per_second:
+          type: number
+          title: Trades Per Second
+      type: object
+      required:
+      - window_start
+      - window_end
+      - trades_count
+      - trades_per_second
+      title: VelocityData
+    VelocityResponse:
+      properties:
+        symbol:
+          type: string
+          title: Symbol
+        count:
+          type: integer
+          title: Count
+        data:
+          items:
+            $ref: '#/components/schemas/VelocityData'
+          type: array
+          title: Data
+      type: object
+      required:
+      - symbol
+      - count
+      - data
+      title: VelocityResponse
+    WhaleData:
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          title: Timestamp
+        symbol:
+          type: string
+          title: Symbol
+        side:
+          type: string
+          title: Side
+        qty:
+          type: number
+          title: Qty
+      type: object
+      required:
+      - timestamp
+      - symbol
+      - side
+      - qty
+      title: WhaleData
+    WhaleResponse:
+      properties:
+        count:
+          type: integer
+          title: Count
+        data:
+          items:
+            $ref: '#/components/schemas/WhaleData'
+          type: array
+          title: Data
+      type: object
+      required:
+      - count
+      - data
+      title: WhaleResponse
