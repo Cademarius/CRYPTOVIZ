@@ -466,12 +466,9 @@ export default function DashboardPage() {
                   const cryptoColor = CRYPTO_BADGE_COLORS[n.symbol] || DEFAULT_CRYPTO_BADGE;
 
                   return (
-                    <a
+                    <div
                       key={i}
-                      href={`https://www.google.com/search?q=${encodeURIComponent(n.title + " " + n.source)}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="block rounded-xl border border-white/[0.04] bg-white/[0.02] px-4 py-3 transition-all duration-300 hover:bg-white/[0.04] hover:border-white/[0.07] cursor-pointer group"
+                      className="block rounded-xl border border-white/[0.04] bg-white/[0.02] px-4 py-3 transition-all duration-300"
                     >
                       <div className="flex items-start gap-3">
                         {/* Crypto badge */}
@@ -487,7 +484,7 @@ export default function DashboardPage() {
                         {/* Content */}
                         <div className="flex-1 min-w-0">
                           <div className="flex items-start justify-between gap-3">
-                            <p className="text-xs font-semibold text-white/85 leading-snug line-clamp-2 group-hover:text-white/95 transition-colors">
+                            <p className="text-xs font-semibold text-white/85 leading-snug line-clamp-2">
                               {n.title}
                             </p>
                             {/* Sentiment badge */}
@@ -513,7 +510,7 @@ export default function DashboardPage() {
                           </div>
                         </div>
                       </div>
-                    </a>
+                    </div>
                   );
                 })}
               </div>

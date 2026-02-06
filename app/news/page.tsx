@@ -9,7 +9,6 @@ import {
   Newspaper,
   RefreshCw,
   Filter,
-  ExternalLink,
 } from "lucide-react";
 
 /* ── Crypto symbol colors ── */
@@ -150,12 +149,9 @@ export default function NewsPage() {
               const cryptoColor = CRYPTO_BADGE_COLORS[n.symbol] || DEFAULT_CRYPTO_BADGE;
 
               return (
-                <a
+                <div
                   key={i}
-                  href={`https://www.google.com/search?q=${encodeURIComponent(n.title + " " + n.source)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="glass-card glass-shine rounded-2xl p-4 transition-all duration-300 hover:border-white/[0.09] group block cursor-pointer"
+                  className="glass-card glass-shine rounded-2xl p-4 transition-all duration-300"
                 >
                   <div className="flex items-start gap-3.5">
                     {/* Left: Crypto Badge */}
@@ -171,18 +167,17 @@ export default function NewsPage() {
                     {/* Center: Content */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-3">
-                        <h3 className="text-[13px] font-semibold text-white/85 leading-snug group-hover:text-white/95 transition-colors flex-1">
+                        <h3 className="text-[13px] font-semibold text-white/85 leading-snug flex-1">
                           {n.title}
                         </h3>
                         
-                        {/* Right: Sentiment badge + link icon */}
-                        <div className="shrink-0 flex items-center gap-2">
+                        {/* Right: Sentiment badge */}
+                        <div className="shrink-0">
                           <div className={`flex items-center gap-1.5 rounded-lg border ${config.bg} ${config.border} px-2 py-0.5`}>
                             <span className={`text-[10px] font-semibold ${config.text}`}>
                               {config.label}
                             </span>
                           </div>
-                          <ExternalLink className="h-3 w-3 text-white/15 group-hover:text-white/40 transition-colors" />
                         </div>
                       </div>
 
@@ -216,7 +211,7 @@ export default function NewsPage() {
                       </div>
                     </div>
                   </div>
-                </a>
+                </div>
               );
             })}
           </div>
