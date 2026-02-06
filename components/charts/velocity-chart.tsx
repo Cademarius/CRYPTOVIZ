@@ -52,7 +52,10 @@ function VelocityChartInner({ data, height = 250 }: VelocityChartProps) {
           fontSize={11}
           tickLine={false}
           axisLine={false}
-          width={40}
+          width={50}
+          tickFormatter={(v: number) => v.toFixed(2)}
+          domain={["auto", "auto"]}
+          allowDecimals
         />
         <Tooltip
           contentStyle={{
@@ -67,7 +70,7 @@ function VelocityChartInner({ data, height = 250 }: VelocityChartProps) {
           }}
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           formatter={(value: any, name: any) => [
-            Number(value).toFixed(2),
+            Number(value).toFixed(4),
             name === "tps" ? "Trades/sec" : "Total trades",
           ]}
         />

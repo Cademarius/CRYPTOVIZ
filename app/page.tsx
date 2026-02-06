@@ -261,7 +261,7 @@ export default function DashboardPage() {
                 label="Velocity"
                 value={
                   latestVelocity
-                    ? `${latestVelocity.toFixed(2)} trades/s`
+                    ? `${latestVelocity.toFixed(4)} trades/s`
                     : "N/A"
                 }
                 icon={<Zap className="h-4 w-4" />}
